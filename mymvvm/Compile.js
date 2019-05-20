@@ -2,24 +2,21 @@ class Compile{
     constructor(el){
         this.$el = Compile.isElementNode(el) ? el : document.querySelector(el);
         if(this.$el){
-            this.compileElement(this.$el);
+            this.compile(this.$el);
         }
     }
-    compileElement(el){
+    compile(el){
         let text = el.textContent;
         let child = el.childNodes;
         for(const node of Array.from(child)){
-            // 如果是element节点，则递归到下一步进行解析
+            // 如果是element节点，则进行attributes的解释
             if(Compile.isElementNode(node)){
-                this.compileElement(node)
+                this.compileElement(node);
+                this.compile(node);
             }else if(Compile.isTextNode(node)){
                 // 如果是text节点，则进行t-text的处理
                 this.compileText(node);
             }
-            // 如果是model节点，则进行t-model的处理
-            // if(this.isModelNode(node)){
-            //     this.compileModel(node);
-            // }
         }
     }
     /**
@@ -41,8 +38,28 @@ class Compile{
      * @param {*} node 
      */
     compileText(node){
-        let reg = /\{\{((?:.|\n)+?)\}\}/;
-        
+        let reg = /\{\{([^}]+)\}\}/g;
+        node.textContent = node.textContent.replace(reg,'要替换进去的内容');
+    }
+    /**
+     * 编译元素节点（遍历编译attribt）
+     * @param {*} node 
+     */
+    compileElement(node){
+        let reg = /^t-/;
+        console.log(node.attributes);
+        for(const attr of node.attributes){
+            if(reg.test(attr.nodeName)){
+                switch(attr.nodeName){
+                    case 't-text':
+                        node.textContent = "t-text要替换进去的内容"
+                        break;
+                    case 't-model':
+                        node.value = 't-model要替换进去的内容'
+
+                }
+            }
+        }
     }
 }
 
