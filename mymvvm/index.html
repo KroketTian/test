@@ -11,15 +11,26 @@
             <div>lala</div>
             <div>{{name}} ----  {{msg}}----<span t-text="name"></span></div>
             <div t-text="name">13131</div>
-            <input v-model="msg"/>
+            <input id="inputBlock" t-model="msg"/>
         </div>
+        <script src="Dep.js"></script>
+        <script src="Watcher.js"></script>
         <script src="Compile.js"></script>
+        <script src="Observe.js"></script>
         <script>
-            let compile = new Compile("#app");
-            let data = {
+            function getValueByKeyFromData(content,data){
+                let keys = content.split('.');
+                return keys.reduce((pre,next,index) => {
+                    return data[next]
+                },data)
+            }
+            var data = {
                 name:'lala',
                 msg:'baba'
             }
+            let vm = {};
+            vm.data = data;
+            let compile = new Compile("#app",vm);
             let observe = new Observe(data);
         </script>
     </body>

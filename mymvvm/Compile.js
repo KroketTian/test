@@ -1,5 +1,6 @@
 class Compile{
-    constructor(el){
+    constructor(el,vm){
+        this.$vm = vm
         this.$el = Compile.isElementNode(el) ? el : document.querySelector(el);
         if(this.$el){
             this.compile(this.$el);
@@ -39,7 +40,12 @@ class Compile{
      */
     compileText(node){
         let reg = /\{\{([^}]+)\}\}/g;
-        node.textContent = node.textContent.replace(reg,'要替换进去的内容');
+        let newRes = node.textContent.replace(reg,(word,content,i,str) => {
+            this.setWatcherByKey(content,node);
+            return getValueByKeyFromData(content,this.$vm.data);
+        });
+        node.textContent = newRes;
+        
     }
     /**
      * 编译元素节点（遍历编译attribt）
@@ -47,19 +53,25 @@ class Compile{
      */
     compileElement(node){
         let reg = /^t-/;
-        console.log(node.attributes);
         for(const attr of node.attributes){
             if(reg.test(attr.nodeName)){
                 switch(attr.nodeName){
                     case 't-text':
-                        node.textContent = "t-text要替换进去的内容"
+                        this.setWatcherByKey(attr.nodeValue,node);
+                        node.textContent = getValueByKeyFromData(attr.nodeValue,this.$vm.data);
                         break;
                     case 't-model':
-                        node.value = 't-model要替换进去的内容'
+                        node.value = getValueByKeyFromData(attr.nodeValue,this.$vm.data);
 
                 }
             }
         }
+    }
+    setWatcherByKey(key,node){
+        let watcher = new Watcher(this.$vm,key,() => {
+            debugger;
+            node.textContent = getValueByKeyFromData(key,this.$vm.data);
+        })
     }
 }
 

@@ -23,6 +23,7 @@ class Observe{
             // 可枚举
             enumerable: true,
             get:() => {
+                Dep.target ? dep.addObserve(Dep.target) : '';
                 return oldValue;
             },
             set: (newValue) => {
@@ -30,6 +31,7 @@ class Observe{
                     this.observe(newValue);
                     oldValue = newValue;
                     // 通知更新
+                    dep.notify();
                 }
             }
         })
