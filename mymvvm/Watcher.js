@@ -4,10 +4,9 @@ class Watcher{
         this.callback = callback;
         Dep.target = this;
         this.oldVale = getValueByKeyFromData(key,vm.data);
-        Dep.terget = null;
+        Dep.target = null;
     }
     upData(){
-        debugger
         this.callback ? this.callback() : '';
     }
 }

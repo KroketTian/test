@@ -69,7 +69,6 @@ class Compile{
     }
     setWatcherByKey(key,node){
         let watcher = new Watcher(this.$vm,key,() => {
-            debugger;
             node.textContent = getValueByKeyFromData(key,this.$vm.data);
         })
     }

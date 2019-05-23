@@ -1,4 +1,5 @@
 class Dep{
+    static target = null;
     constructor(){
         /** 观察列表 */
         this.observes = [];
@@ -8,7 +9,6 @@ class Dep{
     }
     notify(){
         for(const watcher of this.observes){
-            console.log(watcher);
             watcher.upData();
         }
     }
