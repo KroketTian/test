@@ -12,11 +12,13 @@
             <div>{{name}} ----  {{msg}}----<span t-text="name"></span></div>
             <div t-text="name">13131</div>
             <input id="inputBlock" t-model="msg"/>
+            <input id="inputBlock" t-model="msg"/>
         </div>
         <script src="Dep.js"></script>
         <script src="Watcher.js"></script>
         <script src="Compile.js"></script>
         <script src="Observe.js"></script>
+        <script src="Mvvm.js"></script>
         <script>
             function getValueByKeyFromData(content,data){
                 let keys = content.split('.');
@@ -24,14 +26,27 @@
                     return data[next]
                 },data)
             }
-            var data = {
-                name:'lala',
-                msg:'baba'
+            function replaceValueByoldData(content,data){
+                let newRes = content.replace(/\{\{([^}]+)\}\}/g,(word,p1,i,str) => {
+                    return getValueByKeyFromData(p1,data);
+                });
+                return newRes;
             }
-            let vm = {};
-            vm.data = data;
-            let observe = new Observe(data);
-            let compile = new Compile("#app",vm);
+            function setDataByKey(data,key,newValue){
+                let keys = key.split('.');
+                let setData =  keys.reduce((pre,next,index) => {
+                    if(index === keys.length - 1){
+                        return data[next] = newValue;
+                    }
+                    return data[next]
+                },data)
+            }
+            let vm = new Mvvm('#app',{
+                data : {
+                    name:'lala',
+                    msg:'baba'
+                }
+            })
         </script>
     </body>
 </html>

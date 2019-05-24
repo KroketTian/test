@@ -1,6 +1,6 @@
 class Compile{
-    constructor(el,vm){
-        this.$vm = vm
+    constructor(el,data){
+        this.$data = data;
         this.$el = Compile.isElementNode(el) ? el : document.querySelector(el);
         if(this.$el){
             this.compile(this.$el);
@@ -39,13 +39,14 @@ class Compile{
      * @param {*} node 
      */
     compileText(node){
-        let reg = /\{\{([^}]+)\}\}/g;
-        let newRes = node.textContent.replace(reg,(word,content,i,str) => {
-            this.setWatcherByKey(content,node);
-            return getValueByKeyFromData(content,this.$vm.data);
+        let allContent = node.textContent;
+        let newRes = allContent.replace(/\{\{([^}]+)\}\}/g,(word,content,i,str) => {
+            let watcher = new Watcher(this.$data,content,(newValue) => {
+                node.textContent = replaceValueByoldData(allContent,this.$data);
+            })
+            return getValueByKeyFromData(content,this.$data);
         });
         node.textContent = newRes;
-        
     }
     /**
      * 编译元素节点（遍历编译attribt）
@@ -55,98 +56,26 @@ class Compile{
         let reg = /^t-/;
         for(const attr of node.attributes){
             if(reg.test(attr.nodeName)){
+                let key = attr.nodeValue;
                 switch(attr.nodeName){
                     case 't-text':
-                        this.setWatcherByKey(attr.nodeValue,node);
-                        node.textContent = getValueByKeyFromData(attr.nodeValue,this.$vm.data);
+                        new Watcher(this.$data,key,(newValue) => {
+                            node.textContent = getValueByKeyFromData(key,this.$data);
+                        })
+                        node.textContent = getValueByKeyFromData(key,this.$data);
                         break;
                     case 't-model':
-                        node.value = getValueByKeyFromData(attr.nodeValue,this.$vm.data);
+                        let that = this;
+                        node.value = getValueByKeyFromData(attr.nodeValue,this.$data);
+                        new Watcher(this.$data,key,(newValue) => {
+                            node.value = getValueByKeyFromData(attr.nodeValue,this.$data);
+                        })
+                        node.addEventListener('input',function(e){
+                            setDataByKey(that.$data,key,e.target.value)
+                        })
 
                 }
             }
         }
     }
-    setWatcherByKey(key,node){
-        let watcher = new Watcher(this.$vm,key,() => {
-            node.textContent = getValueByKeyFromData(key,this.$vm.data);
-        })
-    }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// function Compile (el, value) {
-//     this.$val = value;
-//     this.$el = this.isElementNode(el) ? el : document.querySelector(el);
-//     if (this.$el) {
-//       this.compileElement(this.$el);
-//     }
-//   }
-//   Compile.prototype = {
-//     compileElement: function (el) {
-//       let self = this;
-//       let childNodes = el.childNodes;
-//       [].slice.call(childNodes).forEach(node => {
-//         let text = node.textContent;
-//         let reg = /\{\{((?:.|\n)+?)\}\}/;
-//         // 如果是element节点
-//         if (self.isElementNode(node)) {
-//           self.compile(node);
-//         }
-//         // 如果是text节点
-//         else if (self.isTextNode(node) && reg.test(text)) {
-//           // 匹配第一个选项
-//           self.compileText(node, RegExp.$1.trim());
-//         }
-//         // 解析子节点包含的指令
-//         if (node.childNodes && node.childNodes.length) {
-//           self.compileElement(node);
-//         }
-//       })
-//     },
-//     // 指令解析
-//     compile: function (node) {
-//       let nodeAttrs = node.attributes;
-//       let self = this;
-  
-//       [].slice.call(nodeAttrs).forEach(attr => {
-//         var attrName = attr.name;
-//         if (self.isDirective(attrName)) {
-//           var exp = attr.value;
-//           node.innerHTML = typeof this.$val[exp] === 'undefined' ? '' : this.$val[exp];
-//           node.removeAttribute(attrName);
-//         }
-//       });
-//     },
-//     // {{ test }} 匹配变量 test
-//     compileText: function (node, exp) {
-//       node.textContent = typeof this.$val[exp] === 'undefined' ? '' : this.$val[exp];
-//     },
-//     // element节点
-//     isElementNode: function (node) {
-//       return node.nodeType === 1;
-//     },
-//     // text纯文本
-//     isTextNode: function (node) {
-//       return node.nodeType === 3
-//     },
-//     // x-XXX指令判定
-//     isDirective: function (attr) {
-//       return attr.indexOf('x-') === 0;
-//     }
-//   }

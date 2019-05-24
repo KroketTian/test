@@ -1,12 +1,14 @@
 class Watcher{
-    constructor(vm,key,callback){
+    constructor(data,key,callback){
+        this.data = data;
         this.key = key;
         this.callback = callback;
         Dep.target = this;
-        this.oldVale = getValueByKeyFromData(key,vm.data);
+        this.oldVale = getValueByKeyFromData(key,data);
         Dep.target = null;
     }
     upData(){
-        this.callback ? this.callback() : '';
+        let newValue = replaceValueByoldData(this.key,this.data)
+        this.callback ? this.callback(newValue) : '';
     }
 }
