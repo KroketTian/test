@@ -42,9 +42,9 @@ class Compile{
         let allContent = node.textContent;
         let newRes = allContent.replace(/\{\{([^}]+)\}\}/g,(word,content,i,str) => {
             let watcher = new Watcher(this.$data,content,(newValue) => {
-                node.textContent = replaceValueByoldData(allContent,this.$data);
+                node.textContent = util.replaceValueByoldData(allContent,this.$data);
             })
-            return getValueByKeyFromData(content,this.$data);
+            return util.getValueByKeyFromData(content,this.$data);
         });
         node.textContent = newRes;
     }
@@ -60,18 +60,18 @@ class Compile{
                 switch(attr.nodeName){
                     case 't-text':
                         new Watcher(this.$data,key,(newValue) => {
-                            node.textContent = getValueByKeyFromData(key,this.$data);
+                            node.textContent = util.getValueByKeyFromData(key,this.$data);
                         })
-                        node.textContent = getValueByKeyFromData(key,this.$data);
+                        node.textContent = util.getValueByKeyFromData(key,this.$data);
                         break;
                     case 't-model':
                         let that = this;
-                        node.value = getValueByKeyFromData(attr.nodeValue,this.$data);
+                        node.value = util.getValueByKeyFromData(attr.nodeValue,this.$data);
                         new Watcher(this.$data,key,(newValue) => {
-                            node.value = getValueByKeyFromData(attr.nodeValue,this.$data);
+                            node.value = util.getValueByKeyFromData(attr.nodeValue,this.$data);
                         })
                         node.addEventListener('input',function(e){
-                            setDataByKey(that.$data,key,e.target.value)
+                            util.setDataByKey(that.$data,key,e.target.value)
                         })
 
                 }

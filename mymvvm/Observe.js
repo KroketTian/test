@@ -1,23 +1,23 @@
 class Observe{
-    constructor(val){
-        this.val = val;
+    constructor(data){
+        this.$data = data;
         // 劫持数据
-        this.observe(val);
+        this.observe(this.$data);
     }
-    observe(val){
-        if (!val || Object.prototype.toString.call(val).match(/\[object (.+)\]/)[1] !== 'Object') {
+    observe(data){
+        if (!data || Object.prototype.toString.call(data).match(/\[object (.+)\]/)[1] !== 'Object') {
             return;
         }
-        let keys = Object.keys(val);
+        let keys = Object.keys(data);
         for(const key of keys){
-            this.observe(val[key]);
-            this.setDefine(val,key);
+            this.observe(data[key]);
+            this.setDefine(data,key);
         }
     }
-    setDefine(val,key){
-        let oldValue = val[key];
+    setDefine(data,key){
+        let oldValue = data[key];
         let dep = new Dep();
-        Object.defineProperty(val,key,{
+        Object.defineProperty(data,key,{
             // 可配置，可以修改以及删除等
             configurable: true,
             // 可枚举
