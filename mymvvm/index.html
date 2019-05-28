@@ -20,12 +20,19 @@
         <script src="Compile.js"></script>
         <script src="Observe.js"></script>
         <script src="Mvvm.js"></script>
+        <script src="jquery-3.3.1.min.js"></script>
         <script>
             let vm = new Mvvm('#app',{
                 data : {
                     name:'lala',
                     msg:'baba'
                 }
+            })
+            $.ajax({
+                url:'test.sb3',
+                type:'GET',
+                success: function(res){console.log(res)},
+                error: function(err){console.log(err)}
             })
         </script>
     </body>

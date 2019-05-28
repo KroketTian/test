@@ -6,11 +6,15 @@ class Compile{
             this.compile(this.$el);
         }
     }
+    /**
+     * 递归每个元素，解析含有指令的元素
+     * @param {object} el dom节点
+     */
     compile(el){
         let text = el.textContent;
         let child = el.childNodes;
         for(const node of Array.from(child)){
-            // 如果是element节点，则进行attributes的解释
+            // 如果是element节点，则进行attributes的解释，并进行下一步递归
             if(Compile.isElementNode(node)){
                 this.compileElement(node);
                 this.compile(node);
@@ -22,21 +26,21 @@ class Compile{
     }
     /**
      * 判断是否是元素节点
-     * @param {*} node  元素
+     * @param {*} node  dom节点
      */
     static isElementNode(node){
         return node.nodeType === 1;
     }
     /**
      * 判断是否是文本节点
-     * @param {*} node 
+     * @param {*} node dom节点
      */
     static isTextNode(node){
         return node.nodeType === 3;
     }
     /**
      * 编译文本节点
-     * @param {*} node 
+     * @param {*} node dom节点
      */
     compileText(node){
         let allContent = node.textContent;
@@ -50,7 +54,7 @@ class Compile{
     }
     /**
      * 编译元素节点（遍历编译attribt）
-     * @param {*} node 
+     * @param {*} node dom节点
      */
     compileElement(node){
         let reg = /^t-/;
