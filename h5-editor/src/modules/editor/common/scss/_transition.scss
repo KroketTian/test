@@ -1,0 +1,6 @@
+@mixin uiTransitionAll(){
+  transition: all .3s linear 0s
+}
+.ui-transition-all{
+  @include uiTransitionAll;
+}
